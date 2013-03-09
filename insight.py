@@ -28,7 +28,7 @@ def rows(model):
             n = num(len(model[' '.join((counts, perc, label))]))
             mi, ma = map(num, counts.split('-'))
             crange = str(mi) if mi == ma else '%s-%s' % (mi, ma)
-            txt = crange + (' event' if counts == '1' else ' events')
+            txt = crange + (' event' if crange == '1' else ' events')
             yield col, {'label': '*%s*\n\n'
                                  '**%s** (%s) users' % (txt, perc, n),
                         'background': COLORS[label]}
