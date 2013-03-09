@@ -17,15 +17,21 @@ def columns(model):
         yield {'name': col,
                'label': label.capitalize(),
                'width': perc,
+               'sortable': False,
                'cell': 'markdown'}
     
 def rows(model):
+    def num(x):
+        return '{0:,}'.format(int(x))
     def row():
         for col, (counts, perc, label) in keys(model):
-            mi, ma = map(lambda x: '{0:,}'.format(int(x)), counts.split('-'))
+            n = num(len(model[' '.join((counts, perc, label))]))
+            mi, ma = map(num, counts.split('-'))
             crange = str(mi) if mi == ma else '%s-%s' % (mi, ma)
             txt = crange + (' event' if counts == '1' else ' events')
-            yield col, {'label': '**%s**\n\n%s' % (perc, txt),
+            yield col, {'label': '*%s*\n\n'
+                                 '%s users\n\n'
+                                 '**%s**' % (txt, n, perc),
                         'background': COLORS[label]}
     yield dict(row())
 
