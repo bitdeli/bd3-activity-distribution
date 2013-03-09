@@ -22,11 +22,11 @@ def columns(model):
 def rows(model):
     def row():
         for col, (counts, perc, label) in keys(model):
-            mi, ma = counts.split('-')
+            mi, ma = map(lambda x: '{0:,}'.format(int(x)), counts.split('-'))
             if mi == ma:
                 counts = mi
             txt = counts + (' event' if counts == '1' else ' events')
-            yield col, {'label': '*%s*\n\n%s' % (perc, txt),
+            yield col, {'label': '**%s**\n\n%s' % (perc, txt),
                         'background': COLORS[label]}
     yield dict(row())
 
