@@ -2,13 +2,40 @@ from bitdeli.insight import insight
 from bitdeli.widgets import Text, Bar, Table
 from discodb.query import Q, Literal, Clause
 
+COLORS = {'least active': 'rgb(255, 36, 0)',
+          'barely active': 'rgb(255, 197, 11)',
+          'moderately active': 'rgb(179, 220, 108)',
+          'very active': 'rgb(0, 163, 89)',
+          'most active': 'rgb(118, 192, 255)'}
+
+def keys(model):
+    for i, key in enumerate(sorted(model.keys(), key=lambda x: int(x.split('-')[0]))):
+        yield 'c%d' % i, key.split(' ', 2)
+
+def columns(model):
+    for col, (counts, perc, label) in keys(model):
+        yield {'name': col,
+               'label': label.capitalize(),
+               'width': perc}
+    
+def rows(model):
+    def streak():
+        for col, (counts, perc, label) in keys(model):
+            yield col, {'label': perc, 'background': COLORS[label]}
+    def legend():
+        for col, (counts, perc, label) in keys(model):
+            mi, ma = counts.split('-')
+            if mi == ma:
+                counts = mi
+            txt = counts + (' event' if counts == '1' else ' events')
+            yield col, {'label': txt,
+                        'background': COLORS[label]}
+    yield dict(streak())
+    yield dict(legend())
+
 @insight
 def view(model, params):
-    params = {'events': ['$signup', 'Clip created']}
-    def steps(events):
-        for i in range(len(events)):
-            q = Q([Clause([Literal(event)]) for event in events[:i + 1]])
-            yield events[i], len(model.query(q))
-    return [Bar(size=(12, 6),
-                data=list(steps(params['events'])))]
-    
+    yield Table(size=(12, 3),
+                fixed_width=False,
+                data={'columns': list(columns(model)),
+                      'rows': list(rows(model))})
