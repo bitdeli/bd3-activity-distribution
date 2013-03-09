@@ -16,22 +16,19 @@ def columns(model):
     for col, (counts, perc, label) in keys(model):
         yield {'name': col,
                'label': label.capitalize(),
-               'width': perc}
+               'width': perc,
+               'cell': 'markdown'}
     
 def rows(model):
-    def streak():
-        for col, (counts, perc, label) in keys(model):
-            yield col, {'label': perc, 'background': COLORS[label]}
-    def legend():
+    def row():
         for col, (counts, perc, label) in keys(model):
             mi, ma = counts.split('-')
             if mi == ma:
                 counts = mi
             txt = counts + (' event' if counts == '1' else ' events')
-            yield col, {'label': txt,
+            yield col, {'label': '*%s*\n\n%s' % (perc, txt),
                         'background': COLORS[label]}
-    yield dict(streak())
-    yield dict(legend())
+    yield dict(row())
 
 @insight
 def view(model, params):
