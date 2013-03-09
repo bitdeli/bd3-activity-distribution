@@ -30,8 +30,7 @@ def rows(model):
             crange = str(mi) if mi == ma else '%s-%s' % (mi, ma)
             txt = crange + (' event' if counts == '1' else ' events')
             yield col, {'label': '*%s*\n\n'
-                                 '%s users\n\n'
-                                 '**%s**' % (txt, n, perc),
+                                 '**%s** (%s) users' % (txt, perc, n),
                         'background': COLORS[label]}
     yield dict(row())
 
