@@ -1,6 +1,10 @@
 from bitdeli.insight import insight
-from bitdeli.widgets import Text, Bar, Table
+from bitdeli.widgets import Text, Table
 from discodb.query import Q, Literal, Clause
+
+CAPTION = """
+### What is the proportion of active users compared to inactive users?
+"""
 
 COLORS = {'least active': 'rgb(255, 36, 0)',
           'barely active': 'rgb(255, 197, 11)',
@@ -36,6 +40,9 @@ def rows(model):
 
 @insight
 def view(model, params):
+    yield Text(size=(12, 'auto'),
+               label="Showing user activity",
+               data={'text': CAPTION})
     yield Table(size=(12, 3),
                 fixed_width=False,
                 data={'columns': list(columns(model)),
