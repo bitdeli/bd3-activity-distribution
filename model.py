@@ -64,4 +64,3 @@ def build(profiles):
                                     LABELS[label])
         for count, uid in bin:
             yield key, uid
-

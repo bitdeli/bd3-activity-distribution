@@ -52,10 +52,9 @@ def view(model, params):
     
 @segment
 def segment(model, params):
-    print params
-    return []
+    return model[params['segment_id']]
     
 @segment_label
 def label(segment, params):
-    return 'fubar'
+    return '%s users' % params['segment_id'].split(' ', 2)[2].capitalize()
     
