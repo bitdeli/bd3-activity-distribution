@@ -1,4 +1,4 @@
-from bitdeli.insight import insight
+from bitdeli.insight import insight, segment, segment_label
 from bitdeli.widgets import Text, Table
 from discodb.query import Q, Literal, Clause
 
