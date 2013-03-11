@@ -29,13 +29,15 @@ def rows(model):
         return '{0:,}'.format(int(x))
     def row():
         for col, (counts, perc, label) in keys(model):
-            n = num(len(model[' '.join((counts, perc, label))]))
+            key = ' '.join((counts, perc, label))
+            n = num(len(model[key]))
             mi, ma = map(num, counts.split('-'))
             crange = str(mi) if mi == ma else '%s-%s' % (mi, ma)
             txt = crange + (' event' if crange == '1' else ' events')
             yield col, {'label': '*%s*\n\n'
                                  '**%s** (%s) users' % (txt, perc, n),
-                        'background': COLORS[label]}
+                        'background': COLORS[label],
+                        'segment_id': key}
     yield dict(row())
 
 @insight
@@ -47,3 +49,13 @@ def view(model, params):
                 fixed_width=False,
                 data={'columns': list(columns(model)),
                       'rows': list(rows(model))})
+    
+@segment
+def segment(model, params):
+    print params
+    return []
+    
+@segment_label
+def label(segment, params):
+    return 'fubar'
+    
