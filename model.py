@@ -1,6 +1,6 @@
 from bitdeli.model import model, segment_model
 from itertools import chain, imap
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
 BIN_SIZES = (.1, .2)
 LABELS = ('least active',
