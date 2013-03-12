@@ -30,7 +30,7 @@ def table_data(model, counter):
         perc = '%.1f%%' % (100. * size / total)
         yield 'c%d' % i, txt, label, size, perc, key
 
-def make_table(model, counter):
+def make_table(model, counter, segment_id):
     data = list(table_data(model, counter))
     def columns():
         for col, txt, label, size, perc, key in data:
@@ -46,7 +46,7 @@ def make_table(model, counter):
                 yield col, {'label': '*%s*\n\n'
                                      '**%s** (%s) users' % (txt, perc, size),
                             'background': COLORS[label],
-                            'segment_id': key}
+                            'segment_id': '%s|%s' % (segment_id, key)}
     return Table(size=(12, 2),
                  fixed_width=False,
                  data={'columns': list(columns()), 'rows': [dict(row())]})
@@ -72,7 +72,7 @@ def view(model, params):
     yield Text(size=(12, 'auto'),
                data={'text': LABEL.format(label='All users',
                                           size=len(omodel.unique_values()))})
-    yield make_table(omodel, lambda model, key: len(model[key]))
+    yield make_table(omodel, lambda model, key: len(model[key]), '')
     
     if has_segments:
         for segment, label in zip(model.segments, model.labels):
@@ -81,15 +81,26 @@ def view(model, params):
             yield Text(size=(12, 'auto'),
                        data={'text': LABEL.format(label=label,
                                                   size=len(segment))})
-            yield make_table(model.model, segcounter)
+            yield make_table(model.model, segcounter, label)
     
 @segment
 def segment(model, params):
-    return model[params['value']['segment_id']]
-    
+    segid, key = params['value']['segment_id'].split('|', 1)
+    omodel = model.model if hasattr(model, 'segments') else model
+    if segid:
+        segment = model.segments[int(segid)]
+        return (uid for uid in omodel[key] if uid in segment)
+    else:
+        return omodel[key]
+ 
 @segment_label
 def label(segment, params):
-    label = params['value']['segment_id'].split(' ', 2)[2]
-    return '%s users' % label.capitalize()
+    segid, key = params['value']['segment_id'].split('|', 1)
+    label = key.split(' ', 2)[2]
+    if segid:
+        seglabel = params['params']['segment-labels'][int(segid)]
+        return '%s who are %s' % (seglabel, label)
+    else:
+        return '%s users' % label.capitalize()
 
     
