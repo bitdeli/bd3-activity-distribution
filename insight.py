@@ -4,7 +4,7 @@ from discodb.query import Q, Literal, Clause
 from collections import namedtuple
 
 CAPTION = """
-### What is the proportion of active users compared to inactive users?
+## What is the proportion of active users compared to inactive users?
 """
 
 LABEL = """
@@ -67,6 +67,7 @@ def view(model, params):
     omodel = model.model if has_segments else model
     
     yield Text(size=(12, 'auto'),
+               label='Showing user activity',
                data={'text': CAPTION})
     yield Text(size=(12, 'auto'),
                data={'text': LABEL.format(label='All users',
