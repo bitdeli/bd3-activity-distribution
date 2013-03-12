@@ -8,7 +8,7 @@ CAPTION = """
 """
 
 LABEL = """
-### **{label}** ({size} users)
+### **{label}** ({size:,} users)
 """
 
 COLORS = {'least active': 'rgb(255, 36, 0)',
@@ -66,16 +66,18 @@ def view(model, params):
     has_segments = hasattr(model, 'segments')
     omodel = model.model if has_segments else model
     
-    yield Text(size=(12, 1),
-                data={'text': LABEL.format(label='All users',
-                                           size=len(omodel.unique_values()))})
+    yield Text(size=(12, 'auto'),
+               data={'text': CAPTION})
+    yield Text(size=(12, 'auto'),
+               data={'text': LABEL.format(label='All users',
+                                          size=len(omodel.unique_values()))})
     yield make_table(omodel, lambda model, key: len(model[key]))
     
     if has_segments:
         for segment, label in zip(model.segments, model.labels):
             def segcounter(model, key):
                 return sum(1 for uid in model[key] if uid in segment)
-            yield Text(size=(12, 1),
+            yield Text(size=(12, 'auto'),
                        data={'text': LABEL.format(label=label,
                                                   size=len(segment))})
             yield make_table(model.model, segcounter)
