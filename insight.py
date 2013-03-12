@@ -17,9 +17,10 @@ COLORS = {'least active': 'rgb(255, 36, 0)',
           'very active': 'rgb(0, 163, 89)',
           'most active': 'rgb(118, 192, 255)'}
 
+def num(x):
+    return '{0:,}'.format(int(x))
+
 def table_data(model, counter):
-    def num(x):
-        return '{0:,}'.format(int(x))
     keys = sorted(model, key=lambda x: int(x.split()[0]))
     sizes = [counter(model, key) for key in keys]
     total = float(sum(sizes))
@@ -43,8 +44,9 @@ def make_table(model, counter, segment_id):
     def row():
         for col, txt, label, size, perc, key in data:
             if size:
-                yield col, {'label': '*%s*\n\n'
-                                     '**%s** (%s) users' % (txt, perc, size),
+                t = '*%s*\n\n'\
+                    '**%s** (%s) users' % (txt, perc, num(size))
+                yield col, {'label': t,
                             'background': COLORS[label],
                             'segment_id': '%s|%s' % (segment_id, key)}
     return Table(size=(12, 2),
@@ -75,13 +77,14 @@ def view(model, params):
     yield make_table(omodel, lambda model, key: len(model[key]), '')
     
     if has_segments:
-        for segment, label in zip(model.segments, model.labels):
+        for i, (segment, label) in enumerate(zip(model.segments,
+                                                 model.labels)):
             def segcounter(model, key):
                 return sum(1 for uid in model[key] if uid in segment)
             yield Text(size=(12, 'auto'),
                        data={'text': LABEL.format(label=label,
                                                   size=len(segment))})
-            yield make_table(model.model, segcounter, label)
+            yield make_table(model.model, segcounter, i)
     
 @segment
 def segment(model, params):
