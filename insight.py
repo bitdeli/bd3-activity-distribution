@@ -97,11 +97,11 @@ def segment(model, params):
         return omodel[key]
  
 @segment_label
-def label(segment, params):
+def label(segment, model, params):
     segid, key = params['value']['segment_id'].split('|', 1)
     label = key.split(' ', 2)[2]
     if segid:
-        seglabel = params['segment-labels'][int(segid)]
+        seglabel = model.labels[int(segid)]
         return '%s who are %s' % (seglabel, label)
     else:
         return '%s users' % label.capitalize()
