@@ -101,7 +101,7 @@ def label(segment, params):
     segid, key = params['value']['segment_id'].split('|', 1)
     label = key.split(' ', 2)[2]
     if segid:
-        seglabel = params['params']['segment-labels'][int(segid)]
+        seglabel = params['segment-labels'][int(segid)]
         return '%s who are %s' % (seglabel, label)
     else:
         return '%s users' % label.capitalize()
