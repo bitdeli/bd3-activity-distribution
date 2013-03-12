@@ -1,4 +1,4 @@
-from bitdeli.model import model
+from bitdeli.model import model, segment_model
 from itertools import chain, imap
 from collections import defaultdict
 
@@ -40,27 +40,29 @@ def binify(profiles):
         counts.append((sum(count for hour, count in all_events), profile.uid))
     counts.sort()
     #counts = list(chain(*[[(i + 1, [])] * 10 for i in range(10)]))
-    m = float(len(counts))
+    num_users = len(counts)
     rest = counts
     for i, bin_size in enumerate(BIN_SIZES):
-        n = int(m * bin_size)
+        n = int(num_users * bin_size)
         for s in (1, -1):
             if rest:
                 bin, rest = partition(rest[::s], n, s)
                 rest = rest[::s]
                 if bin:
-                    yield bin, len(bin) / m
+                    yield bin
     if rest:
-        yield rest, len(rest) / m
+        yield rest
 
 @model
 def build(profiles):
     bins = list(sorted(binify(profiles), key=lambda x: x[0][0]))
-    for label, (bin, size) in zip(LABELSET[len(bins)], bins):
+    for label, bin in zip(LABELSET[len(bins)], bins):
         counts = frozenset(imap(lambda x: x[0], bin))
-        key = '%d-%d %2.1f%% %s' % (min(counts),
-                                    max(counts),
-                                    size * 100,
-                                    LABELS[label])
+        key = '%d %d %s' % (min(counts), max(counts), LABELS[label])
         for count, uid in bin:
             yield key, uid
+
+@segment_model
+def segment(model, segments, labels):
+    return namedtuple('SegmentInfo', ('model', 'segments', 'labels'))\
+                     (model, segments, labels)
