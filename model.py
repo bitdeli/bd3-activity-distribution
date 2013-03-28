@@ -36,8 +36,15 @@ def partition(lst, n, s):
 def binify(profiles):
     counts = []
     for profile in profiles:
-        all_events = chain.from_iterable(profile['events'].itervalues())
-        counts.append((sum(count for hour, count in all_events), profile.uid))
+        events = profile['events']
+        if isinstance(events, dict):
+            # mixpanel
+            all_events = chain.from_iterable(profile['events'].itervalues())
+            total = sum(count for hour, count in all_events)
+        else:
+            # jsapi
+            total = sum(1 for event in events)
+        counts.append((total, profile.uid))
     counts.sort()
     #counts = list(chain(*[[(i + 1, [])] * 10 for i in range(10)]))
     num_users = len(counts)
