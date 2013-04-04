@@ -15,4 +15,5 @@ distribution.
 **Example:** Create segments for *Least active* and *Most active*
 users by clicking on the leftmost and rightmost areas in the chart.
 After the segments have been created, try how selecting them affects
-other insights such as *Characterize* and *People*.
+other insights such as [Characterize](/explore/bitdeli/characterize)
+and [People](/explore/bitdeli/people).
