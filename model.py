@@ -36,14 +36,16 @@ def partition(lst, n, s):
 def binify(profiles):
     counts = []
     for profile in profiles:
-        events = profile['events']
-        if isinstance(events, dict):
+        if 'events' in profile and isinstance(profile['events'], dict):
             # mixpanel
             all_events = chain.from_iterable(profile['events'].itervalues())
             total = sum(count for hour, count in all_events)
         else:
             # jsapi
-            total = sum(1 for event in events)
+            all_events = chain(profile.get('events', []),
+                               profile.get('$dom_event', []),
+                               profile.get('$pageview', []))
+            total = sum(1 for event in all_events)
         counts.append((total, profile.uid))
     counts.sort()
     #counts = list(chain(*[[(i + 1, [])] * 10 for i in range(10)]))
